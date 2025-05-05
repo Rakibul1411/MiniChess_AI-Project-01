@@ -1,0 +1,22 @@
+language    -   python
+
+
+0-      Data structure      
+1-      GUI (move,visual)             -   first     //  rakib
+2-      player vs player              -   second    //  hasnain
+3-      player vs computer(leveling)  -   Algorithm(heuristic,mini-max,alpha-beta)    -   third     //kamrul
+
+
+
+
+today       -   5-May
+
+0-      Data structure      
+1-      GUI (visual)                        -   first     //  rakib
+2-      player vs player     (move)         -   second    //  hasnain
+
+first date  -   12-May
+
+3-      player vs computer(leveling)  -   Algorithm(heuristic,mini-max,alpha-beta)    -   third     //kamrul
+
+due date    -   19-may
