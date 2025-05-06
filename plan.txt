@@ -2,9 +2,9 @@ language    -   python
 
 
 0-      Data structure      
-1-      GUI (move,visual)             -   first     //  rakib
-2-      player vs player              -   second    //  hasnain
-3-      player vs computer(leveling)  -   Algorithm(heuristic,mini-max,alpha-beta)    -   third     //kamrul
+1-      GUI (move,visual)             -   first     
+2-      player vs player              -   second    
+3-      player vs computer(leveling)  -   Algorithm(heuristic,mini-max,alpha-beta)    -   third     
 
 
 
@@ -12,11 +12,24 @@ language    -   python
 today       -   5-May
 
 0-      Data structure      
-1-      GUI (visual)                        -   first     //  rakib
-2-      player vs player     (move)         -   second    //  hasnain
+1-      GUI (visual)                        -   first     
+gui-  
+
+blank page
+difficulty page
+theme
+function
+push
+1 function push
+rest 
+
+2-       (move)         -   second   
+valid move
+
+8-May
 
 first date  -   12-May
 
-3-      player vs computer(leveling)  -   Algorithm(heuristic,mini-max,alpha-beta)    -   third     //kamrul
+3-      player vs computer(leveling)  -   Algorithm(heuristic,mini-max,alpha-beta)    -   third     
 
 due date    -   19-may
