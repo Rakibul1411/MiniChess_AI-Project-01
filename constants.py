@@ -1,0 +1,60 @@
+
+# launch screen constants
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GOLD = (212, 175, 55)
+DARK_GOLD = (160, 130, 40)
+ROYAL_BLUE = (65, 105, 225)
+DARK_RED = (139, 0, 0)    
+
+# difficulty screen constants
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GOLD = (212, 175, 55)
+SILVER = (192, 192, 192)
+BRONZE = (205, 127, 50)
+LIGHT_BLUE = (173, 216, 230, 180)
+
+# Game setup constants
+
+# Game constants
+BOARD_WIDTH = 5
+BOARD_HEIGHT = 6
+SQUARE_SIZE = 120
+UI_HEIGHT = 60
+WIDTH = BOARD_WIDTH * SQUARE_SIZE
+HEIGHT = BOARD_HEIGHT * SQUARE_SIZE + UI_HEIGHT
+FPS = 120
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+DARK_GRAY = (50, 50, 50)
+LIGHT_GRAY = (220, 220, 220)
+GREEN = (76, 175, 80)
+RED = (244, 67, 54)
+BLUE = (33, 150, 243)
+GOLD = (212, 175, 55)
+
+# Highlight colors
+HIGHLIGHT_COLOR = (255, 255, 0, 180)
+MOVE_COLOR = (0, 255, 0, 180)
+LAST_MOVE_COLOR = (0, 0, 255, 180)
+
+
+# Board constants
+
+# Colors
+LIGHT_SQUARE = (240, 217, 181)
+DARK_SQUARE = (181, 136, 99)
+HIGHLIGHT_COLOR = (255, 255, 0, 128) 
+MOVE_COLOR = (0, 255, 0, 128)  
+LAST_MOVE_COLOR = (0, 0, 255, 128)  
+
+
+# Colors for buttons
+GREEN = (0, 200, 0)
+BRIGHT_GREEN = (0, 255, 0)
+RED = (200, 0, 0)
+BRIGHT_RED = (255, 0, 0)
