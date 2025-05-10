@@ -8,6 +8,7 @@ from board import Board
 from pieces import load_piece_images
 from launch_screen import create_launch_screen
 import constants as const
+from difficulty_screen import create_difficulty_screen
 
 def initialize_game():
     """Initialize pygame and create the game window"""
@@ -345,6 +346,7 @@ def play_game_round(screen, clock, images, difficulty):
     
     while True:
         # Handle events
+        action = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return "QUIT"
@@ -388,6 +390,20 @@ def play_game_round(screen, clock, images, difficulty):
                             if piece and piece[0] == player_color:
                                 selected = (row, col)
                                 valid_moves = get_legal_moves(board, row, col)
+                                
+            # Handle game over buttons
+            if game_state and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                
+                # Check if Play Again button is clicked
+                play_again_rect = pygame.Rect(const.WIDTH // 4 - 100, const.HEIGHT - 70, 200, 60)
+                if play_again_rect.collidepoint(pos):
+                    return "DIFFICULTY"  # Go to difficulty selection
+                
+                # Check if Main Menu button is clicked
+                menu_rect = pygame.Rect(const.WIDTH * 3 // 4 - 100, const.HEIGHT - 70, 200, 60)
+                if menu_rect.collidepoint(pos):
+                    return "MENU"  # Go to main menu
         
         # AI's turn
         if turn == ai_color and not game_state:
@@ -422,22 +438,45 @@ def play_game_round(screen, clock, images, difficulty):
         draw_game_screen(screen, board, images, selected, valid_moves, last_move)
         draw_game_ui(screen, turn, game_state, ai_thinking, in_check)
         
+        # Handle game over state with navigation buttons
+        if game_state:
+            # Draw semi-transparent background for buttons
+            button_bg = pygame.Surface((const.WIDTH, 100), pygame.SRCALPHA)
+            button_bg.fill((0, 0, 0, 200))
+            screen.blit(button_bg, (0, const.HEIGHT - 120))
+            
+            # Create buttons
+            font = pygame.font.SysFont("Arial", 32)
+            play_again_rect = pygame.Rect(const.WIDTH // 4 - 100, const.HEIGHT - 70, 200, 60)
+            menu_rect = pygame.Rect(const.WIDTH * 3 // 4 - 100, const.HEIGHT - 70, 200, 60)
+            
+            # Handle mouse hover for buttons
+            mouse_pos = pygame.mouse.get_pos()
+            
+            # Play Again button
+            if play_again_rect.collidepoint(mouse_pos):
+                pygame.draw.rect(screen, const.BRIGHT_GREEN, play_again_rect, border_radius=5)
+                text_color = const.BLACK
+            else:
+                pygame.draw.rect(screen, const.GREEN, play_again_rect, border_radius=5)
+                text_color = const.WHITE
+            text = font.render("Play Again", True, text_color)
+            text_rect = text.get_rect(center=play_again_rect.center)
+            screen.blit(text, text_rect)
+            
+            # Menu button
+            if menu_rect.collidepoint(mouse_pos):
+                pygame.draw.rect(screen, const.BRIGHT_RED, menu_rect, border_radius=5)
+                text_color = const.BLACK
+            else:
+                pygame.draw.rect(screen, const.RED, menu_rect, border_radius=5)
+                text_color = const.WHITE
+            text = font.render("Main Menu", True, text_color)
+            text_rect = text.get_rect(center=menu_rect.center)
+            screen.blit(text, text_rect)
+        
         pygame.display.flip()
         clock.tick(const.FPS)
-        
-        # Handle game over state
-        if game_state:
-            # Wait for player to acknowledge game over
-            time.sleep(1)  # Brief pause to ensure they see the result
-            waiting_for_input = True
-            while waiting_for_input:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        return "QUIT"
-                    if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
-                        waiting_for_input = False
-                        return "MENU"
-                clock.tick(const.FPS)
 
 def handle_main_menu(screen):
     """Display and handle the main menu screen"""
@@ -446,19 +485,25 @@ def handle_main_menu(screen):
         if choice != "PLAY":
             return False  # Quit application
         
-        # Handle difficulty selection
-        difficulty_choice = select_difficulty_with_navigation(screen, const.WIDTH, const.HEIGHT)
-        if difficulty_choice == "QUIT" or difficulty_choice is None:
-            return False  # Quit application
-        
-        # Start game with selected difficulty
-        game_result = play_game_round(screen, pygame.time.Clock(), load_piece_images(const.SQUARE_SIZE), difficulty_choice)
-        
-        if game_result == "QUIT":
-            return False  # Quit application
-        elif game_result == "MENU":
-            continue  # Return to main menu
-
+        difficulty_selected = True
+        while difficulty_selected:
+            # Handle difficulty selection
+            difficulty_choice = select_difficulty_with_navigation(screen, const.WIDTH, const.HEIGHT)
+            if difficulty_choice == "QUIT" or difficulty_choice is None:
+                return False  # Quit application
+            
+            # Start game with selected difficulty
+            game_result = play_game_round(screen, pygame.time.Clock(), load_piece_images(const.SQUARE_SIZE), difficulty_choice)
+            
+            if game_result == "QUIT":
+                return False  # Quit application
+            elif game_result == "MENU":
+                difficulty_selected = False  # Return to main menu
+            elif game_result == "DIFFICULTY":
+                # Continue to difficulty selection (next loop iteration)
+                pass
+            else:
+                difficulty_selected = False  # Default behavior - return to main menu
 def run_game_application():
     """Main function to initialize and run the game application"""
     try:
