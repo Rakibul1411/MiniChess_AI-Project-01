@@ -1,5 +1,6 @@
 # app_logic.py
 import pygame
+import os
 import sys
 import random
 import time
@@ -50,44 +51,62 @@ def draw_game_screen(screen, board, piece_images, selected=None, valid_moves=Non
     
     board.draw_pieces(screen, piece_images)
     
-def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False):
-    """Draw UI elements like turn indicator and game state"""
-    # Draw turn indicator
-    font = pygame.font.SysFont("Arial", 24)
+# In the draw_game_ui function in app_logic.py, replace the current implementation with:
+
+def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, difficulty=None):
+    """Draw UI elements like turn indicator, difficulty, and game state"""
+    assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
+    buttom_font_path = os.path.join(assets_dir, 'Rosemary.ttf')
+    font = pygame.font.Font(buttom_font_path, 25) if os.path.exists(buttom_font_path) else \
+                pygame.font.SysFont("Georgia", 25, bold=True)
+                
     color_text = "White" if turn == 'w' else "Black"
+    bar_height = const.UI_HEIGHT
+    y = const.HEIGHT - bar_height
+
+    # Draw bar at the bottom
+    pygame.draw.rect(screen, (33, 150, 243), (0, y, const.WIDTH, bar_height))
+
+    # Turn (left)
     turn_text = font.render(f"Turn: {color_text}", True, const.WHITE)
-    screen.blit(turn_text, (const.WIDTH - 150, 20))
-    
-    # Draw check indicator
+    turn_pos = (20, y + (bar_height - turn_text.get_height()) // 2)
+    screen.blit(turn_text, turn_pos)
+
+    # Difficulty (right)
+    if difficulty:
+        diff_text = font.render(f"Difficulty: {difficulty.title()}", True, const.WHITE)
+        diff_pos = (const.WIDTH - diff_text.get_width() - 20, y + (bar_height - diff_text.get_height()) // 2)
+        screen.blit(diff_text, diff_pos)
+    else:
+        diff_text = None
+
+    # King in Check! (centered)
     if in_check:
-        check_text = font.render(f"{color_text} is in CHECK!", True, (255, 50, 50))
-        screen.blit(check_text, (const.WIDTH - 200, 50))
-    
-    # Draw game state if game is over
+        check_text = font.render("King in Check!", True, (255, 50, 50))
+        check_x = (const.WIDTH - check_text.get_width()) // 2
+        check_y = y + (bar_height - check_text.get_height()) // 2
+        screen.blit(check_text, (check_x, check_y))
+
+    # Draw game state if game is over (unchanged)
     if game_state in ["checkmate", "stalemate"]:
         state_text = "Checkmate!" if game_state == "checkmate" else "Stalemate!"
         winner = "White wins!" if turn == 'b' else "Black wins!" if game_state == "checkmate" else "Draw!"
-        
         state_font = pygame.font.SysFont("Arial", 36)
         state_surf = state_font.render(state_text, True, const.WHITE)
         winner_surf = state_font.render(winner, True, const.WHITE)
-        
         state_rect = state_surf.get_rect(center=(const.WIDTH//2, const.HEIGHT//2 - 30))
         winner_rect = winner_surf.get_rect(center=(const.WIDTH//2, const.HEIGHT//2 + 30))
-        
-        # Draw semi-transparent background
         bg_surf = pygame.Surface((const.WIDTH, 120), pygame.SRCALPHA)
         bg_surf.fill((0, 0, 0, 180))
         screen.blit(bg_surf, (0, const.HEIGHT//2 - 60))
-        
         screen.blit(state_surf, state_rect)
         screen.blit(winner_surf, winner_rect)
-    
-    # Draw AI thinking indicator
+
+    # AI thinking indicator (unchanged)
     if ai_thinking:
         thinking_font = pygame.font.SysFont("Arial", 24)
         thinking_text = thinking_font.render("AI is thinking...", True, const.WHITE)
-        screen.blit(thinking_text, (50, 20))
+        screen.blit(thinking_text, (20, 20))
 
 def find_king(board, color):
     """Find the position of the king with the given color"""
@@ -410,7 +429,7 @@ def play_game_round(screen, clock, images, difficulty):
             ai_thinking = True
             # Draw the current state while AI is "thinking"
             draw_game_screen(screen, board, images, selected, valid_moves, last_move)
-            draw_game_ui(screen, turn, game_state, ai_thinking, in_check)
+            draw_game_ui(screen, turn, game_state, ai_thinking, in_check, difficulty)
             pygame.display.flip()
             
             # Add a small delay to make it look like the AI is thinking
@@ -436,7 +455,7 @@ def play_game_round(screen, clock, images, difficulty):
         
         # Draw game screen
         draw_game_screen(screen, board, images, selected, valid_moves, last_move)
-        draw_game_ui(screen, turn, game_state, ai_thinking, in_check)
+        draw_game_ui(screen, turn, game_state, ai_thinking, in_check, difficulty)
         
         # Handle game over state with navigation buttons
         if game_state:

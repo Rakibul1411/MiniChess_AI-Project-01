@@ -412,3 +412,19 @@ class Board:
                     else:
                         score -= value
         return score
+      
+def _draw_check_highlight(self, surface):
+    """Draw red pulsing effect for king in check"""
+    radius = int(self.square_size//2 * (0.9 + 0.1 * abs(pygame.time.get_ticks() % 1000 - 500)/500))
+    pygame.draw.circle(
+        surface, (255, 0, 0, 180), 
+        (self.square_size//2, self.square_size//2), 
+        radius
+    )
+    # Inner white circle for better visibility
+    pygame.draw.circle(
+        surface, (255, 255, 255, 100), 
+        (self.square_size//2, self.square_size//2), 
+        radius//2
+    )      
+      

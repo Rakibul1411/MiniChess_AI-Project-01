@@ -36,6 +36,7 @@ GREEN = (76, 175, 80)
 RED = (244, 67, 54)
 BLUE = (33, 150, 243)
 GOLD = (212, 175, 55)
+CHECK_COLOR = (255, 0, 0, 180) 
 
 # Highlight colors
 HIGHLIGHT_COLOR = (255, 255, 0, 180)
