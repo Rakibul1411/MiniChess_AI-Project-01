@@ -72,20 +72,24 @@ def draw_back_button(screen, height, font, button_states, assets):
     button_rect = pygame.Rect(20, height - 70, 120, 50)
     mouse_pos = pygame.mouse.get_pos()
     hover = button_rect.collidepoint(mouse_pos)
-    
-    # Draw button using common function
+
     hover, button_rect = draw_modern_button(
         screen, button_rect, "Back", font, hover, assets, button_states, 'back'
     )
-    
-    # Arrow icon
-    pygame.draw.polygon(screen, (205, 127, 50), [
-        (button_rect.x + 20, button_rect.centery),
-        (button_rect.x + 35, button_rect.y + 10),
-        (button_rect.x + 35, button_rect.y + 40)
-    ])
-    
+
+    center_y = button_rect.centery # centery = button_rect.y + (button_rect.height / 2)
+
+    start_x = button_rect.x + 15   
+    tip_x   = button_rect.x + 30   
+    arrow_points = [
+        (start_x, center_y),             
+        (tip_x,   center_y - 8.5),         
+        (tip_x,   center_y + 8.5),         
+    ]
+    pygame.draw.polygon(screen, (205, 127, 50), arrow_points)
+
     return button_rect
+
 
 def draw_launch_buttons(screen, assets, width, height, animation_counter, button_states):
     """Draw buttons for launch screen"""
