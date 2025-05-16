@@ -203,7 +203,8 @@ def create_difficulty_screen(screen, width, height):
                         assets['click_sound'].play()
                     choice = create_launch_screen(screen, width, height)
                     if choice == "PLAY":
-                        return "BACK_TO_PLAY"
+                        # Re-enter difficulty selection
+                        return create_difficulty_screen(screen, width, height)
                     else:
                         pygame.quit()
                         sys.exit()
