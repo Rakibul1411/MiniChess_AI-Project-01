@@ -89,8 +89,7 @@ def draw_button_text(screen, text, x, y, width, height, text_color, hover=False,
     
     # Calculate text position
     text_rect = text_surface.get_rect(center=(x + width//2, y + height//2))
-    shadow_rect = shadow_surface.get_rect(center=(text_rect.centerx + shadow_offset, 
-                                                 text_rect.centery + shadow_offset))
+    shadow_rect = shadow_surface.get_rect(center=(text_rect.centerx + shadow_offset, text_rect.centery + shadow_offset))
     
     # Draw text with effects
     if hover or selected:
