@@ -1,6 +1,8 @@
 import random
 from app_game_move import get_legal_moves, find_king, is_in_check, is_game_over
+pruning_stats = {'cuts': 0}
 
+'''
 def get_ai_move(board, color, difficulty):
     """Generate an AI move based on difficulty level"""
     # Get all pieces and their legal moves
@@ -95,21 +97,89 @@ def get_ai_move(board, color, difficulty):
     # Default fallback
     piece_pos, moves = random.choice(all_pieces_with_moves)
     return (piece_pos, random.choice(moves))
+'''
+
+def get_ai_move(board, color, difficulty):
+    """Generate an AI move based on difficulty level"""
+    # Get all pieces and their legal moves
+    all_pieces_with_moves = []
+    for r in range(board.height):
+        for c in range(board.width):
+            piece = board.get_piece(r, c)
+            if piece and piece[0] == color:
+                legal_moves = get_legal_moves(board, r, c)
+                if legal_moves:
+                    all_pieces_with_moves.append(((r, c), legal_moves))
+    
+    if not all_pieces_with_moves:
+        return None
+
+    depth=-1
+    
+    if difficulty == "EASY":
+        depth=0
+    
+    elif difficulty == "MEDIUM":
+        depth=1
+    
+    elif difficulty == "HARD":
+        depth=4
+
+    elif difficulty == "":
+        depth=3
+        
+    best_score = float('-inf')
+    best_move = None
+        
+    for piece_pos, moves in all_pieces_with_moves:
+        for move in moves:
+                # Make move
+            captured_piece = board.get_piece(move[0], move[1])
+            board.make_move(piece_pos, move)
+                
+                # Evaluate position (minimax depth 2)
+            opponent_color = 'b' if color == 'w' else 'w'
+            
+            score = minimax(board, depth, float('-inf'), float('inf'), False, color, opponent_color)
+            print(pruning_stats)
+                # Undo move
+            board.undo_move(piece_pos, move, captured_piece)
+                
+            if score > best_score:
+                best_score = score
+                best_move = (piece_pos, move)
+        
+    return best_move
+    
+    
+
+
+
 
 def minimax(board, depth, alpha, beta, is_maximizing, player_color, current_color):
     """Minimax algorithm with alpha-beta pruning"""
     # Check terminal conditions
-    if depth == 0:
-        return board.evaluate_board(player_color)
-    
+
+    game_state = is_game_over(board, current_color)
     opponent_color = 'b' if current_color == 'w' else 'w'
+
+
+    if depth == 0 or game_state:
+
+        return heuristic_function(board, player_color, opponent_color, game_state)
+        #return board.evaluate_board(player_color)
+    
+    '''
+    
+    
     
     # Check for checkmate/stalemate
-    game_state = is_game_over(board, current_color)
     if game_state == "checkmate":
         return 1000 if opponent_color == player_color else -1000
     elif game_state == "stalemate":
         return 0
+    '''
+    
     
     # Find all legal moves
     all_moves = []
@@ -133,6 +203,7 @@ def minimax(board, depth, alpha, beta, is_maximizing, player_color, current_colo
             max_eval = max(max_eval, eval)
             alpha = max(alpha, eval)
             if beta <= alpha:
+                pruning_stats['cuts'] += 1
                 break
         return max_eval
     else:
@@ -147,5 +218,16 @@ def minimax(board, depth, alpha, beta, is_maximizing, player_color, current_colo
             min_eval = min(min_eval, eval)
             beta = min(beta, eval)
             if beta <= alpha:
+                pruning_stats['cuts'] += 1
                 break
         return min_eval
+
+def heuristic_function(board, player_color, opponent_color, game_state):
+    
+    # Check for checkmate/stalemate
+    if game_state == "checkmate":
+        return 1000 if opponent_color == player_color else -1000
+    elif game_state == "stalemate":
+        return 0
+
+    return board.evaluate_board(player_color)
