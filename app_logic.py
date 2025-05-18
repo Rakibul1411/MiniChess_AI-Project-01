@@ -58,6 +58,8 @@ def draw_game_screen(screen, board, piece_images, selected=None, valid_moves=Non
     
 # In the draw_game_ui function in app_logic.py, replace the current implementation with:
 
+# Update draw_game_ui function in app_logic.py to handle insufficient material
+
 def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, difficulty=None):
     """Draw UI elements like turn indicator, difficulty, and game state"""
     assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
@@ -92,10 +94,18 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
         check_y = y + (bar_height - check_text.get_height()) // 2
         screen.blit(check_text, (check_x, check_y))
 
-    # Draw game state if game is over (unchanged)
-    if game_state in ["checkmate", "stalemate"]:
-        state_text = "Checkmate!" if game_state == "checkmate" else "Stalemate!"
-        winner = "White wins!" if turn == 'b' else "Black wins!" if game_state == "checkmate" else "Draw!"
+    # Draw game state if game is over
+    if game_state in ["checkmate", "stalemate", "insufficient_material"]:
+        if game_state == "checkmate":
+            state_text = "Checkmate!"
+            winner = "White wins!" if turn == 'b' else "Black wins!"
+        elif game_state == "stalemate":
+            state_text = "Stalemate!"
+            winner = "Draw!"
+        else:  # insufficient_material
+            state_text = "Only Kings Remain!"
+            winner = "Draw!"
+            
         state_font = pygame.font.SysFont("Arial", 36)
         state_surf = state_font.render(state_text, True, const.WHITE)
         winner_surf = state_font.render(winner, True, const.WHITE)
@@ -107,13 +117,11 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
         screen.blit(state_surf, state_rect)
         screen.blit(winner_surf, winner_rect)
 
-    # AI thinking indicator (unchanged)
+    # AI thinking indicator
     if ai_thinking:
         thinking_font = pygame.font.SysFont("Arial", 24)
         thinking_text = thinking_font.render("AI is thinking...", True, const.WHITE)
         screen.blit(thinking_text, (20, 20))
-
-
 
 def play_game_round(screen, clock, images, difficulty):
     """Handle a complete game round with player and AI interaction"""
