@@ -6,48 +6,6 @@ from app_game_move import get_legal_moves, find_king, is_in_check, is_game_over
 pruning_stats = {'cuts': 0}
 
 
-def get_ai_move(board, color, difficulty):
-    
-    start_time=time.time()
-    current_color=color
-    all_pieces_with_moves=get_all_pieces_with_moves(board, color)
-
-    if not all_pieces_with_moves:
-        return None
-
-    depth=-1
-    if difficulty == "EASY":
-        depth=1
-    elif difficulty == "MEDIUM":
-        depth=2
-    elif difficulty == "HARD":
-        depth=3
-    elif difficulty == "":
-        depth=4
-
-    ordered_moves=get_sorted_moves(board, color, all_pieces_with_moves)
-        
-    best_score = float('-inf')
-    best_move = None
-        
-    for start, end in ordered_moves:
-        captured = board.get_piece(end[0], end[1])
-        board.make_move(start, end)
-        
-        score = minimax(board, depth-1, -float('inf'), float('inf'), False, color, 
-                       'b' if color == 'w' else 'w')
-        
-        board.undo_move(start, end, captured)
-        
-        if score > best_score:
-            best_score = score
-            best_move = (start, end)
-    
-    end_time=time.time()
-    print(end_time-start_time)
-    return best_move
-
-
 def get_all_pieces_with_moves(board, color):
     pieces_with_moves = []
     for r in range(board.height):
@@ -73,6 +31,67 @@ def get_sorted_moves(board, color, all_pieces_with_moves):
     sorted_moves.sort(key=lambda x: x[2], reverse=True)
     ordered_moves = [(start, end) for start, end, _ in sorted_moves]
     return ordered_moves
+
+
+def get_ai_move(board, color, difficulty):
+    
+    start_time=time.time()
+    current_color=color
+    all_pieces_with_moves=get_all_pieces_with_moves(board, color)
+
+    if not all_pieces_with_moves:
+        return None
+
+    depth=-1
+    if difficulty == "EASY":
+        depth=2
+    elif difficulty == "MEDIUM":
+        depth=3
+    elif difficulty == "HARD":
+        depth=4
+    elif difficulty == "":
+        depth=4
+
+    ordered_moves=get_sorted_moves(board, color, all_pieces_with_moves)
+        
+    best_score = float('-inf')
+    best_move = None
+        
+    timeout = 4.0  
+    last_valid_move = best_move
+    last_valid_score = best_score
+    
+    for start, end in ordered_moves:
+        if time.time() - start_time > timeout:
+            print(f"Timeout! Returning best move found after {time.time()-start_time:.2f}s")
+            return last_valid_move
+        
+        captured = board.get_piece(end[0], end[1])
+        board.make_move(start, end)
+        
+        try:
+            score = minimax(board, depth-1, -float('inf'), float('inf'), 
+                          False, color, 'b' if color == 'w' else 'w')
+        except TimeoutError:
+            board.undo_move(start, end, captured)
+            print(f"Timeout during evaluation! Returning best move so far")
+            return last_valid_move
+        
+        board.undo_move(start, end, captured)
+        
+        if score > best_score:
+            best_score = score
+            best_move = (start, end)
+            last_valid_move = best_move
+            last_valid_score = best_score
+            
+            if best_score >= 1000:  
+                break
+    
+    elapsed = time.time() - start_time
+    print(f"Move found in {elapsed:.2f}s | Score: {best_score}")
+    return best_move
+
     
 
 def minimax(board, depth, alpha, beta, is_maximizing, player_color, current_color):
