@@ -11,6 +11,7 @@ from launch_screen import create_launch_screen
 import constants as const
 from difficulty_screen import create_difficulty_screen
 from game_over_ui import draw_game_over_screen, handle_game_over_events
+
 from ai import get_ai_move
 from app_game_move import get_legal_moves, is_game_over, is_in_check
 
