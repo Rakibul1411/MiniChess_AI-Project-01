@@ -52,6 +52,17 @@ def get_ai_move(board, color, difficulty):
     elif difficulty == "":
         depth=4
 
+    total_pieces = sum(1 for r in range(board.height) 
+                     for c in range(board.width) 
+                     if board.get_piece(r, c))
+    
+    if total_pieces <= 11: 
+        depth+=1  
+        print(f"Endgame detected ({total_pieces} pieces), increasing depth to {depth}")
+    elif total_pieces <= 7:  
+        depth+=1
+        print(f"Late endgame detected ({total_pieces} pieces), increasing depth to {depth}")
+
     ordered_moves=get_sorted_moves(board, color, all_pieces_with_moves)
         
     best_score = float('-inf')
@@ -148,4 +159,15 @@ def heuristic_function(board, player_color, opponent_color, game_state):
     elif game_state == "stalemate":
         return 0
 
-    return board.evaluate_board(player_color)
+    score=board.evaluate_board(player_color)
+
+    WINNING_THRESHOLD=3  
+    WINNING_BONUS=0.1   
+    
+    if score>WINNING_THRESHOLD:
+        player_moves=len(get_all_pieces_with_moves(board,player_color))
+        opponent_moves=len(get_all_pieces_with_moves(board,opponent_color))
+        
+        return score+(player_moves-opponent_moves)*WINNING_BONUS
+
+    return score
