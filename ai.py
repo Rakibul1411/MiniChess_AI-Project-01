@@ -222,12 +222,13 @@ def minimax(board, depth, alpha, beta, is_maximizing, player_color, current_colo
                 break
         return min_eval
 
+
 def heuristic_function(board, player_color, opponent_color, game_state):
     
-    # Check for checkmate/stalemate
+    # Check for checkmate/stalemate/insufficient material
     if game_state == "checkmate":
         return 1000 if opponent_color == player_color else -1000
-    elif game_state == "stalemate":
-        return 0
+    elif game_state in ["stalemate", "insufficient_material"]:
+        return 0  # Draw situations return 0
 
     return board.evaluate_board(player_color)
