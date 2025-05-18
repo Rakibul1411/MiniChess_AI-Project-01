@@ -150,13 +150,13 @@ def create_button(screen, text, x, y, width, height, color, hover_color, text_co
     
     return None
 
-def handle_difficulty_navigation(difficulty):
+def handle_difficulty_navigation(result):
     """Process the result from difficulty selection"""
-    if difficulty == "BACK_TO_PLAY":
+    if result is None:
         return None  # Return to main menu
-    return difficulty
+    return result  # Return (difficulty, opponent) tuple
 
 def select_difficulty_with_navigation(screen, width, height):
     """Handles the difficulty selection screen and navigation"""
-    difficulty = create_difficulty_screen(screen, width, height)
-    return handle_difficulty_navigation(difficulty)
+    result = create_difficulty_screen(screen, width, height)
+    return handle_difficulty_navigation(result)

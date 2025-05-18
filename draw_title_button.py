@@ -14,16 +14,24 @@ def draw_title(screen, width, height, font, animation_timer=None, is_launch=Fals
     screen.blit(title_surf, title_rect)
     return TITLE_TOP + TITLE_HEIGHT + 10  # Return position for subtitle if needed
 
-def draw_modern_button(screen, rect, text, font, hover, assets=None, button_states=None, button_key=None):
-    """Draw a modern, centered button with clean style and hover effect."""
-    # Button background with hover effect
+def draw_modern_button(screen, rect, text, font, hover, assets=None, button_states=None, button_key=None, selected=False):
+    """Draw a modern, centered button with clean style, hover, and selected effect."""
+    # Button background with hover or selected effect
+    if selected:
+        bg_color = (255, 230, 120)  # Gold highlight for selected
+        border_color = (255, 200, 40)
+    elif hover:
+        bg_color = (220, 220, 220)
+        border_color = (181, 136, 99)
+    else:
+        bg_color = (30, 30, 30, 180)
+        border_color = (181, 136, 99)
+    pygame.draw.rect(screen, bg_color, rect, border_radius=32)
+    # Glow effect for hover
     if hover:
         glow_surf = pygame.Surface((rect.width+16, rect.height+16), pygame.SRCALPHA)
-        pygame.draw.rect(glow_surf, (200, 200, 200, 240), 
-                        (0, 0, rect.width, rect.height), 
-                        border_radius=32)
+        pygame.draw.rect(glow_surf, (200, 200, 200, 120), (0, 0, rect.width, rect.height), border_radius=32)
         screen.blit(glow_surf, (rect.x, rect.y))
-        # Play hover sound if assets and button_states are provided
         if assets and button_states and button_key and assets['hover_sound']:
             if not button_states[button_key]['hover']:
                 assets['hover_sound'].play()
@@ -32,15 +40,17 @@ def draw_modern_button(screen, rect, text, font, hover, assets=None, button_stat
         if assets and button_states and button_key:
             button_states[button_key]['hover'] = False
     # Border
-    pygame.draw.rect(screen, (181, 136, 99), rect, 1, border_radius=32)
+    border_width = 4 if selected else 1
+    pygame.draw.rect(screen, border_color, rect, border_width, border_radius=32)
     # Button text
-    text_surf = font.render(text, True, (205, 127, 50))
+    text_color = (205, 127, 50) if not selected else (120, 80, 0)
+    text_surf = font.render(text, True, text_color)
     text_rect = text_surf.get_rect(center=rect.center)
     screen.blit(text_surf, text_rect)
     return hover, rect
 
 def draw_button_with_description(screen, width, height, font, desc_font, 
-                                y_pos, text, color, description, button_states, button_key, assets):
+                                y_pos, text, color, description, button_states, button_key, assets, selected=False):
     """Draw a button with description text below it"""
     button_width = int(width * 0.3)
     button_height = 50
@@ -57,7 +67,7 @@ def draw_button_with_description(screen, width, height, font, desc_font,
     
     # Draw button using common function
     hover, button_rect = draw_modern_button(
-        screen, button_rect, text, font, hover, assets, button_states, button_key
+        screen, button_rect, text, font, hover, assets, button_states, button_key, selected=selected
     )
     
     # Description text
