@@ -10,8 +10,7 @@ from pieces import load_piece_images
 from launch_screen import create_launch_screen
 import constants as const
 from difficulty_screen import create_difficulty_screen
-
-
+from game_over_ui import draw_game_over_screen, handle_game_over_events
 
 from ai import get_ai_move
 from app_game_move import get_legal_moves, is_game_over, is_in_check
@@ -55,14 +54,12 @@ def draw_game_screen(screen, board, piece_images, selected=None, valid_moves=Non
         board.highlight_square(screen, selected[0], selected[1], const.HIGHLIGHT_COLOR)
     
     board.draw_pieces(screen, piece_images)
-    
-# In the draw_game_ui function in app_logic.py, replace the current implementation with:
 
 def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, difficulty=None):
     """Draw UI elements like turn indicator, difficulty, and game state"""
     assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
-    buttom_font_path = os.path.join(assets_dir, 'Rosemary.ttf')
-    font = pygame.font.Font(buttom_font_path, 25) if os.path.exists(buttom_font_path) else \
+    button_font_path = os.path.join(assets_dir, 'Rosemary.ttf')
+    font = pygame.font.Font(button_font_path, 25) if os.path.exists(button_font_path) else \
                 pygame.font.SysFont("Georgia", 25, bold=True)
                 
     color_text = "White" if turn == 'w' else "Black"
@@ -92,270 +89,11 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
         check_y = y + (bar_height - check_text.get_height()) // 2
         screen.blit(check_text, (check_x, check_y))
 
-    # Draw game state if game is over (unchanged)
-    if game_state in ["checkmate", "stalemate"]:
-        state_text = "Checkmate!" if game_state == "checkmate" else "Stalemate!"
-        winner = "White wins!" if turn == 'b' else "Black wins!" if game_state == "checkmate" else "Draw!"
-        state_font = pygame.font.SysFont("Arial", 36)
-        state_surf = state_font.render(state_text, True, const.WHITE)
-        winner_surf = state_font.render(winner, True, const.WHITE)
-        state_rect = state_surf.get_rect(center=(const.WIDTH//2, const.HEIGHT//2 - 30))
-        winner_rect = winner_surf.get_rect(center=(const.WIDTH//2, const.HEIGHT//2 + 30))
-        bg_surf = pygame.Surface((const.WIDTH, 120), pygame.SRCALPHA)
-        bg_surf.fill((0, 0, 0, 180))
-        screen.blit(bg_surf, (0, const.HEIGHT//2 - 60))
-        screen.blit(state_surf, state_rect)
-        screen.blit(winner_surf, winner_rect)
-
-    # AI thinking indicator (unchanged)
+    # AI thinking indicator
     if ai_thinking:
         thinking_font = pygame.font.SysFont("Arial", 24)
         thinking_text = thinking_font.render("AI is thinking...", True, const.WHITE)
         screen.blit(thinking_text, (20, 20))
-
-
-'''
-def find_king(board, color):
-    """Find the position of the king with the given color"""
-    for r in range(board.height):
-        for c in range(board.width):
-            piece = board.get_piece(r, c)
-            if piece and piece[0] == color and 'king' in piece:
-                return (r, c)
-    return None
-
-def is_in_check(board, color):
-    """Check if the king of the given color is in check"""
-    # Find the king's position
-    king_pos = find_king(board, color)
-    if not king_pos:
-        return False  # No king found (shouldn't happen in a normal game)
-    
-    # Check if any opponent piece can capture the king
-    opponent_color = 'b' if color == 'w' else 'w'
-    
-    for r in range(board.height):
-        for c in range(board.width):
-            piece = board.get_piece(r, c)
-            if piece and piece[0] == opponent_color:
-                moves = board.get_valid_moves(r, c)
-                if king_pos in moves:
-                    return True
-    
-    return False
-
-def would_be_in_check_after_move(board, start, end, color):
-    """Check if making a move would leave the king in check"""
-    # Save the current state
-    sr, sc = start
-    er, ec = end
-    moved_piece = board.get_piece(sr, sc)
-    captured_piece = board.get_piece(er, ec)
-    
-    # Make the move
-    board.make_move(start, end)
-    
-    # Check if the king is in check after the move
-    result = is_in_check(board, color)
-    
-    # Restore the original position
-    board.undo_move(start, end, captured_piece)
-    
-    return result
-
-def get_legal_moves(board, row, col):
-    """Get all legal moves for a piece (moves that don't leave the king in check)"""
-    piece = board.get_piece(row, col)
-    if not piece:
-        return []
-    
-    color = piece[0]
-    potential_moves = board.get_valid_moves(row, col)
-    legal_moves = []
-    
-    for move in potential_moves:
-        # Check if the move would leave the king in check
-        if not would_be_in_check_after_move(board, (row, col), move, color):
-            legal_moves.append(move)
-    
-    return legal_moves
-
-def is_game_over(board, color):
-    """Check if the game is over (checkmate or stalemate)"""
-    # Check if the king is in check
-    check = is_in_check(board, color)
-    
-    # Check if there are any legal moves
-    has_legal_moves = False
-    for r in range(board.height):
-        for c in range(board.width):
-            piece = board.get_piece(r, c)
-            if piece and piece[0] == color:
-                legal_moves = get_legal_moves(board, r, c)
-                if legal_moves:
-                    has_legal_moves = True
-                    break
-        if has_legal_moves:
-            break
-    
-    if not has_legal_moves:
-        if check:
-            return "checkmate"  # No legal moves and king is in check
-        else:
-            return "stalemate"  # No legal moves but king is not in check
-    
-    return None
-'''
-'''
-def get_ai_move(board, color, difficulty):
-    """Generate an AI move based on difficulty level"""
-    # Get all pieces and their legal moves
-    all_pieces_with_moves = []
-    for r in range(board.height):
-        for c in range(board.width):
-            piece = board.get_piece(r, c)
-            if piece and piece[0] == color:
-                legal_moves = get_legal_moves(board, r, c)
-                if legal_moves:
-                    all_pieces_with_moves.append(((r, c), legal_moves))
-    
-    if not all_pieces_with_moves:
-        return None
-    
-    if difficulty == "EASY":
-        # Random move selection
-        piece_pos, moves = random.choice(all_pieces_with_moves)
-        move = random.choice(moves)
-        return (piece_pos, move)
-    
-    elif difficulty == "MEDIUM":
-        # Prioritize captures, checks, and protecting the king
-        check_moves = []  # Moves that put opponent in check
-        capture_moves = []  # Moves that capture a piece
-        king_safety_moves = []  # Moves that get king out of danger or block checks
-        regular_moves = []  # All other legal moves
-        
-        opponent_color = 'b' if color == 'w' else 'w'
-        king_pos = find_king(board, color)
-        opponent_king_pos = find_king(board, opponent_color)
-        
-        for piece_pos, moves in all_pieces_with_moves:
-            for move in moves:
-                # Make the move temporarily
-                captured_piece = board.get_piece(move[0], move[1])
-                board.make_move(piece_pos, move)
-                
-                # Check if this move puts the opponent's king in check
-                if is_in_check(board, opponent_color):
-                    check_moves.append((piece_pos, move))
-                # Check if this move captures a piece
-                elif captured_piece:
-                    capture_value = board.get_piece_value(captured_piece)
-                    capture_moves.append((piece_pos, move, capture_value))
-                # Check if this improves king safety (king move out of danger)
-                elif 'king' in board.get_piece(move[0], move[1]):
-                    king_safety_moves.append((piece_pos, move))
-                else:
-                    regular_moves.append((piece_pos, move))
-                
-                # Undo the move
-                board.undo_move(piece_pos, move, captured_piece)
-        
-        # Prioritize moves
-        if check_moves:
-            return random.choice(check_moves)
-        elif capture_moves:
-            # Sort captures by value and pick from top half
-            capture_moves.sort(key=lambda x: x[2], reverse=True)
-            best_half = capture_moves[:max(1, len(capture_moves)//2)]
-            return random.choice(best_half)[:2]  # Return just the position and move
-        elif king_safety_moves:
-            return random.choice(king_safety_moves)
-        else:
-            return random.choice(regular_moves)
-    
-    elif difficulty == "HARD":
-        # Simple minimax
-        best_score = float('-inf')
-        best_move = None
-        
-        for piece_pos, moves in all_pieces_with_moves:
-            for move in moves:
-                # Make move
-                captured_piece = board.get_piece(move[0], move[1])
-                board.make_move(piece_pos, move)
-                
-                # Evaluate position (minimax depth 2)
-                opponent_color = 'b' if color == 'w' else 'w'
-                score = minimax(board, 2, float('-inf'), float('inf'), False, color, opponent_color)
-                
-                # Undo move
-                board.undo_move(piece_pos, move, captured_piece)
-                
-                if score > best_score:
-                    best_score = score
-                    best_move = (piece_pos, move)
-        
-        return best_move
-    
-    # Default fallback
-    piece_pos, moves = random.choice(all_pieces_with_moves)
-    return (piece_pos, random.choice(moves))
-
-def minimax(board, depth, alpha, beta, is_maximizing, player_color, current_color):
-    """Minimax algorithm with alpha-beta pruning"""
-    # Check terminal conditions
-    if depth == 0:
-        return board.evaluate_board(player_color)
-    
-    opponent_color = 'b' if current_color == 'w' else 'w'
-    
-    # Check for checkmate/stalemate
-    game_state = is_game_over(board, current_color)
-    if game_state == "checkmate":
-        return 1000 if opponent_color == player_color else -1000
-    elif game_state == "stalemate":
-        return 0
-    
-    # Find all legal moves
-    all_moves = []
-    for r in range(board.height):
-        for c in range(board.width):
-            piece = board.get_piece(r, c)
-            if piece and piece[0] == current_color:
-                legal_moves = get_legal_moves(board, r, c)
-                for move in legal_moves:
-                    all_moves.append(((r, c), move))
-    
-    if is_maximizing:
-        max_eval = float('-inf')
-        for start, end in all_moves:
-            captured_piece = board.get_piece(end[0], end[1])
-            board.make_move(start, end)
-            
-            eval = minimax(board, depth - 1, alpha, beta, False, player_color, opponent_color)
-            
-            board.undo_move(start, end, captured_piece)
-            max_eval = max(max_eval, eval)
-            alpha = max(alpha, eval)
-            if beta <= alpha:
-                break
-        return max_eval
-    else:
-        min_eval = float('inf')
-        for start, end in all_moves:
-            captured_piece = board.get_piece(end[0], end[1])
-            board.make_move(start, end)
-            
-            eval = minimax(board, depth - 1, alpha, beta, True, player_color, opponent_color)
-            
-            board.undo_move(start, end, captured_piece)
-            min_eval = min(min_eval, eval)
-            beta = min(beta, eval)
-            if beta <= alpha:
-                break
-        return min_eval
-'''
 
 def play_game_round(screen, clock, images, difficulty):
     """Handle a complete game round with player and AI interaction"""
@@ -381,6 +119,12 @@ def play_game_round(screen, clock, images, difficulty):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return "MENU"
+            
+            # Handle game over events when the game is over
+            if game_state:
+                result = handle_game_over_events(event)
+                if result:
+                    return result
             
             # Handle player input when it's their turn and game is not over
             if turn == player_color and not game_state:
@@ -418,20 +162,6 @@ def play_game_round(screen, clock, images, difficulty):
                             if piece and piece[0] == player_color:
                                 selected = (row, col)
                                 valid_moves = get_legal_moves(board, row, col)
-                                
-            # Handle game over buttons
-            if game_state and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                pos = pygame.mouse.get_pos()
-                
-                # Check if Play Again button is clicked
-                play_again_rect = pygame.Rect(const.WIDTH // 4 - 100, const.HEIGHT - 70, 200, 60)
-                if play_again_rect.collidepoint(pos):
-                    return "DIFFICULTY"  # Go to difficulty selection
-                
-                # Check if Main Menu button is clicked
-                menu_rect = pygame.Rect(const.WIDTH * 3 // 4 - 100, const.HEIGHT - 70, 200, 60)
-                if menu_rect.collidepoint(pos):
-                    return "MENU"  # Go to main menu
         
         # AI's turn
         if turn == ai_color and not game_state:
@@ -468,40 +198,7 @@ def play_game_round(screen, clock, images, difficulty):
         
         # Handle game over state with navigation buttons
         if game_state:
-            # Draw semi-transparent background for buttons
-            button_bg = pygame.Surface((const.WIDTH, 100), pygame.SRCALPHA)
-            button_bg.fill((0, 0, 0, 200))
-            screen.blit(button_bg, (0, const.HEIGHT - 120))
-            
-            # Create buttons
-            font = pygame.font.SysFont("Arial", 32)
-            play_again_rect = pygame.Rect(const.WIDTH // 4 - 100, const.HEIGHT - 70, 200, 60)
-            menu_rect = pygame.Rect(const.WIDTH * 3 // 4 - 100, const.HEIGHT - 70, 200, 60)
-            
-            # Handle mouse hover for buttons
-            mouse_pos = pygame.mouse.get_pos()
-            
-            # Play Again button
-            if play_again_rect.collidepoint(mouse_pos):
-                pygame.draw.rect(screen, const.BRIGHT_GREEN, play_again_rect, border_radius=5)
-                text_color = const.BLACK
-            else:
-                pygame.draw.rect(screen, const.GREEN, play_again_rect, border_radius=5)
-                text_color = const.WHITE
-            text = font.render("Play Again", True, text_color)
-            text_rect = text.get_rect(center=play_again_rect.center)
-            screen.blit(text, text_rect)
-            
-            # Menu button
-            if menu_rect.collidepoint(mouse_pos):
-                pygame.draw.rect(screen, const.BRIGHT_RED, menu_rect, border_radius=5)
-                text_color = const.BLACK
-            else:
-                pygame.draw.rect(screen, const.RED, menu_rect, border_radius=5)
-                text_color = const.WHITE
-            text = font.render("Main Menu", True, text_color)
-            text_rect = text.get_rect(center=menu_rect.center)
-            screen.blit(text, text_rect)
+            draw_game_over_screen(screen, game_state, turn)
         
         pygame.display.flip()
         clock.tick(const.FPS)
@@ -532,6 +229,7 @@ def handle_main_menu(screen):
                 pass
             else:
                 difficulty_selected = False  # Default behavior - return to main menu
+
 def run_game_application():
     """Main function to initialize and run the game application"""
     try:

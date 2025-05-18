@@ -114,3 +114,10 @@ GREEN = (0, 200, 0)
 BRIGHT_GREEN = (0, 255, 0)
 RED = (200, 0, 0)
 BRIGHT_RED = (255, 0, 0)
+
+
+# Add to constants.py
+GREEN = (76, 175, 80)
+BLUE = (33, 150, 243)
+BRIGHT_GREEN = (102, 187, 106)
+BRIGHT_BLUE = (66, 165, 245)
