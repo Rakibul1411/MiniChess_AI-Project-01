@@ -11,6 +11,11 @@ from launch_screen import create_launch_screen
 import constants as const
 from difficulty_screen import create_difficulty_screen
 
+
+
+from ai import get_ai_move
+from app_game_move import get_legal_moves, is_game_over, is_in_check
+
 def initialize_game():
     """Initialize pygame and create the game window"""
     pygame.init()
@@ -108,6 +113,8 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
         thinking_text = thinking_font.render("AI is thinking...", True, const.WHITE)
         screen.blit(thinking_text, (20, 20))
 
+
+'''
 def find_king(board, color):
     """Find the position of the king with the given color"""
     for r in range(board.height):
@@ -198,7 +205,8 @@ def is_game_over(board, color):
             return "stalemate"  # No legal moves but king is not in check
     
     return None
-
+'''
+'''
 def get_ai_move(board, color, difficulty):
     """Generate an AI move based on difficulty level"""
     # Get all pieces and their legal moves
@@ -347,6 +355,7 @@ def minimax(board, depth, alpha, beta, is_maximizing, player_color, current_colo
             if beta <= alpha:
                 break
         return min_eval
+'''
 
 def play_game_round(screen, clock, images, difficulty):
     """Handle a complete game round with player and AI interaction"""
