@@ -153,6 +153,26 @@ def minimax(board, depth, alpha, beta, is_maximizing, player_color, current_colo
         return min_eval
 
 
+def count_controlled_squares(board, color):
+    
+    controlled = set()  
+    for r in range(board.height):
+        for c in range(board.width):
+            piece = board.get_piece(r, c)
+            if piece and piece[0] == color:
+                for move in board.get_valid_moves(r, c):
+                    controlled.add(move) 
+    
+    return len(controlled)
+
+
+def evaluate_space_control(board, color):
+    opponent_color = 'b' if color == 'w' else 'w'
+    player_control = count_controlled_squares(board, color)
+    opponent_control = count_controlled_squares(board, opponent_color)
+    return (player_control - opponent_control) * 0.1
+
+
 def heuristic_function(board, player_color, opponent_color, game_state):
     if game_state == "checkmate":
         return 1000 if opponent_color == player_color else -1000
@@ -163,11 +183,15 @@ def heuristic_function(board, player_color, opponent_color, game_state):
 
     WINNING_THRESHOLD=3  
     WINNING_BONUS=0.1   
-    
+    winning_prob_bonus=0
+
     if score>WINNING_THRESHOLD:
         player_moves=len(get_all_pieces_with_moves(board,player_color))
         opponent_moves=len(get_all_pieces_with_moves(board,opponent_color))
         
-        return score+(player_moves-opponent_moves)*WINNING_BONUS
+        winning_prob_bonus=(player_moves-opponent_moves)*WINNING_BONUS
 
-    return score
+    space_advantage=evaluate_space_control(board, player_color)
+    space_bonus=0.2*space_advantage
+
+    return score+winning_prob_bonus+space_bonus
