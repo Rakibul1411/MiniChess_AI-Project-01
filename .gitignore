@@ -1,1 +1,3 @@
 chessvenv/
+__pycache__/
+venv/
