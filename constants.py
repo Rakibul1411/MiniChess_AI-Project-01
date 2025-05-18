@@ -121,3 +121,57 @@ GREEN = (76, 175, 80)
 BLUE = (33, 150, 243)
 BRIGHT_GREEN = (102, 187, 106)
 BRIGHT_BLUE = (66, 165, 245)
+
+# constants.py
+
+# Game constants
+BOARD_WIDTH = 5
+BOARD_HEIGHT = 6
+SQUARE_SIZE = 160
+UI_HEIGHT = 60
+WIDTH = BOARD_WIDTH * SQUARE_SIZE
+HEIGHT = BOARD_HEIGHT * SQUARE_SIZE + UI_HEIGHT
+FPS = 120
+
+# Professional color palette
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+DARK_GRAY = (40, 40, 40)
+LIGHT_GRAY = (230, 230, 230)
+PRIMARY_BLUE = (29, 78, 137)  # Deep blue for UI elements
+SECONDARY_GOLD = (189, 162, 102)  # Subtle gold for accents
+ACCENT_RED = (200, 0, 0)  # For check indicators
+SOFT_GREEN = (92, 138, 92)  # Base for move highlights
+
+# Board colors
+LIGHT_SQUARE = (238, 213, 183)  # Warm ivory, inspired by professional boards
+DARK_SQUARE = (140, 82, 49)  # Rich walnut
+BOARD_BORDER = (80, 48, 27)  # Polished dark wood
+SHADOW_COLOR = (0, 0, 0, 60)  # Soft shadow for depth
+GRADIENT_LIGHT = (245, 222, 179, 50)  # Subtle gradient for light squares
+GRADIENT_DARK = (120, 70, 40, 50)  # Subtle gradient for dark squares
+
+# Highlight colors
+HIGHLIGHT_COLOR = (255, 215, 0, 130)  # Golden glow for selected piece
+MOVE_COLORS = [
+    (92, 138, 92, 150),   # Soft green
+    (0, 200, 200, 150),   # Vibrant cyan
+    (150, 255, 150, 150),  # Bright lime
+]  # Cycling colors for valid moves
+LAST_MOVE_COLOR = (29, 78, 137, 150)  # Deep blue for last move
+CHECK_COLOR = (220, 20, 60, 180)  # Crimson red for king in check
+
+# UI colors
+UI_BG = (30, 30, 30)  # Dark, sleek background for UI bar
+TEXT_COLOR = (245, 245, 245)  # Crisp off-white for text
+BUTTON_COLOR = (29, 78, 137)  # Primary blue for buttons
+BUTTON_HOVER = (54, 103, 162)  # Lighter blue for hover
+BUTTON_BRIGHT = (79, 128, 187)  # Bright blue for active states
+
+# Button colors
+GREEN = (92, 138, 92)
+BRIGHT_GREEN = (112, 158, 112)
+RED = (200, 0, 0)
+BRIGHT_RED = (255, 0, 0)
+BLUE = (29, 78, 137)
+BRIGHT_BLUE = (54, 103, 162)

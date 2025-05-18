@@ -4,7 +4,7 @@ import constants as const
 
 class Board:
     """
-    Enhanced chess board class with beautiful visuals and game logic,
+    Enhanced chess board class with professional visuals and game logic,
     organized into smaller, focused methods.
     """
     
@@ -30,59 +30,82 @@ class Board:
         """Initialize visual decorative elements for the board"""
         self._create_wood_texture()
         self._create_coordinate_markers()
+        self._create_board_shadow()
     
     def _create_wood_texture(self):
-        """Create wood texture for board borders"""
+        """Create refined wood texture for board borders"""
         self.border_texture = pygame.Surface(
-            (self.width * self.square_size, self.height * self.square_size), 
+            (self.width * self.square_size + 20, self.height * self.square_size + 20), 
             pygame.SRCALPHA
         )
-        for i in range(100):
-            shade = random.randint(80, 120)
+        for i in range(0, self.border_texture.get_height(), 2):
+            shade = random.randint(80, 100)
+            grain_color = (
+                shade,
+                max(0, shade - 20),
+                max(0, shade - 40)
+            )
             pygame.draw.line(
                 self.border_texture, 
-                (shade, shade-30, shade-60), 
+                grain_color, 
                 (0, i), 
-                (self.width * self.square_size, i)
+                (self.border_texture.get_width(), i)
             )
     
     def _create_coordinate_markers(self):
-        """Create coordinate markers for board edges"""
-        self.coord_font = pygame.font.SysFont("Arial", 14, bold=True)
+        """Create modern coordinate markers for board edges"""
+        self.coord_font = pygame.font.SysFont("Helvetica", 16, bold=True)
         self.rank_labels = [
-            self.coord_font.render(str(i+1), True, (255, 255, 255)) 
+            self.coord_font.render(str(i+1), True, const.TEXT_COLOR) 
             for i in range(self.height)
         ]
         self.file_labels = [
-            self.coord_font.render(chr(97+i), True, (255, 255, 255)) 
+            self.coord_font.render(chr(97+i), True, const.TEXT_COLOR) 
             for i in range(self.width)
         ]
-
+    
+    def _create_board_shadow(self):
+        """Create subtle shadow for the entire board"""
+        self.shadow_surface = pygame.Surface(
+            (self.width * self.square_size + 30, self.height * self.square_size + 30),
+            pygame.SRCALPHA
+        )
+        pygame.draw.rect(
+            self.shadow_surface, const.SHADOW_COLOR,
+            (0, 0, self.shadow_surface.get_width(), self.shadow_surface.get_height()),
+            border_radius=12
+        )
+    
     # Board drawing methods
     def draw(self, screen, y_offset=0):
         """Draw the chess board with all visual elements"""
+        self._draw_board_shadow(screen, y_offset)
         self._draw_board_border(screen, y_offset)
         self._draw_chess_squares(screen, y_offset)
         self._draw_coordinates(screen, y_offset)
     
+    def _draw_board_shadow(self, screen, y_offset):
+        """Draw the board's shadow for depth"""
+        screen.blit(self.shadow_surface, (-15, y_offset - 15))
+    
     def _draw_board_border(self, screen, y_offset):
-        """Draw the wooden border around the chess board"""
+        """Draw the refined wooden border around the chess board"""
         border_rect = pygame.Rect(
             -10, y_offset-10, 
             self.width*self.square_size+20, 
             self.height*self.square_size+20
         )
-        pygame.draw.rect(screen, (80, 50, 30), border_rect, border_radius=8)
-        screen.blit(self.border_texture, (0, y_offset))
+        pygame.draw.rect(screen, const.BOARD_BORDER, border_rect, border_radius=12)
+        screen.blit(self.border_texture, (-10, y_offset-10))
     
     def _draw_chess_squares(self, screen, y_offset):
-        """Draw all chess squares with textures and effects"""
+        """Draw all chess squares with enhanced textures"""
         for r in range(self.height):
             for c in range(self.width):
                 self._draw_single_square(screen, r, c, y_offset)
     
     def _draw_single_square(self, screen, row, col, y_offset):
-        """Draw a single chess square with visual effects"""
+        """Draw a single chess square with professional visual effects"""
         base_color = const.LIGHT_SQUARE if (row + col) % 2 == 0 else const.DARK_SQUARE
         square_surf = pygame.Surface((self.square_size, self.square_size))
         
@@ -95,28 +118,28 @@ class Board:
         )
     
     def _apply_square_texture(self, surface, base_color, row, col):
-        """Apply wood grain texture to a square"""
+        """Apply smooth wood grain texture to a square"""
         surface.fill(base_color)
-        for i in range(5):
-            shade = 20 if (row + col) % 2 == 0 else -20
+        for i in range(0, self.square_size, 3):
+            shade = random.randint(-10, 10)
             adjusted_color = (
-                min(255, max(0, base_color[0]+shade)),
-                min(255, max(0, base_color[1]+shade)),
-                min(255, max(0, base_color[2]+shade))
+                min(255, max(0, base_color[0] + shade)),
+                min(255, max(0, base_color[1] + shade)),
+                min(255, max(0, base_color[2] + shade))
             )
             pygame.draw.line(
                 surface, adjusted_color, 
-                (0, i*self.square_size//5), 
-                (self.square_size, i*self.square_size//5), 
+                (0, i), 
+                (self.square_size, i),
                 1
             )
     
     def _apply_square_border(self, surface, base_color):
-        """Apply 3D border effect to a square"""
+        """Apply subtle 3D border effect to a square"""
         border_color = (
-            min(255, base_color[0]+30), 
-            min(255, base_color[1]+30), 
-            min(255, base_color[2]+30)
+            min(255, base_color[0] + 20), 
+            min(255, base_color[1] + 20), 
+            min(255, base_color[2] + 20)
         )
         pygame.draw.rect(
             surface, border_color, 
@@ -125,22 +148,22 @@ class Board:
         )
     
     def _draw_coordinates(self, screen, y_offset):
-        """Draw rank and file coordinates"""
+        """Draw modern rank and file coordinates"""
         for i in range(self.height):
             screen.blit(
                 self.rank_labels[i], 
-                (5, y_offset + i*self.square_size + 5)
+                (-5, y_offset + i*self.square_size + 10)
             )
         for i in range(self.width):
             screen.blit(
                 self.file_labels[i], 
-                (i*self.square_size + self.square_size - 15, 
-                y_offset + (self.height-1)*self.square_size + self.square_size - 20)
+                (i*self.square_size + self.square_size - 20, 
+                 y_offset + self.height*self.square_size + 5)
             )
 
     # Piece drawing methods
     def draw_pieces(self, screen, images, y_offset=0):
-        """Draw all chess pieces with visual effects"""
+        """Draw all chess pieces with enhanced visual effects"""
         for r in range(self.height):
             for c in range(self.width):
                 piece = self.board[r][c]
@@ -148,7 +171,7 @@ class Board:
                     self._draw_single_piece(screen, images, r, c, piece, y_offset)
     
     def _draw_single_piece(self, screen, images, row, col, piece, y_offset):
-        """Draw a single chess piece with effects"""
+        """Draw a single chess piece with refined effects"""
         center_x, center_y = self._get_square_center(col, row, y_offset)
         
         self._draw_piece_shadow(screen, center_x, center_y)
@@ -167,21 +190,21 @@ class Board:
         )
     
     def _draw_piece_shadow(self, screen, center_x, center_y):
-        """Draw shadow under a chess piece"""
+        """Draw refined shadow under a chess piece"""
         shadow_surf = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
         shadow_radius = self.square_size // 3
         pygame.draw.circle(
-            shadow_surf, (0, 0, 0, 80), 
-            (self.square_size//2, self.square_size//2 + 2), 
+            shadow_surf, (0, 0, 0, 60), 
+            (self.square_size//2, self.square_size//2 + 3), 
             shadow_radius
         )
         shadow_rect = shadow_surf.get_rect(center=(center_x, center_y))
         screen.blit(shadow_surf, shadow_rect)
     
     def _draw_king_glow(self, screen, center_x, center_y, color):
-        """Draw special glow effect for kings"""
+        """Draw elegant glow effect for kings"""
         glow = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
-        glow_color = (255, 215, 0, 50) if color == 'w' else (200, 200, 255, 50)
+        glow_color = (189, 162, 102, 60) if color == 'w' else (150, 150, 200, 60)
         pygame.draw.circle(
             glow, glow_color, 
             (self.square_size//2, self.square_size//2), 
@@ -192,14 +215,14 @@ class Board:
 
     # Highlighting methods
     def highlight_square(self, screen, row, col, color, y_offset=0):
-        """Highlight a square with visual effects"""
+        """Highlight a square with professional visual effects"""
         center_x, center_y = self._get_square_center(col, row, y_offset)
         highlight_surf = self._create_highlight_surface(color)
         highlight_rect = highlight_surf.get_rect(center=(center_x, center_y))
         screen.blit(highlight_surf, highlight_rect)
     
     def _create_highlight_surface(self, color):
-        """Create the appropriate highlight effect based on type"""
+        """Create refined highlight effect based on type"""
         s = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
         
         if color == const.HIGHLIGHT_COLOR:  # Selected piece
@@ -208,48 +231,65 @@ class Board:
             self._draw_move_highlight(s)
         elif color == const.LAST_MOVE_COLOR:  # Last move
             self._draw_last_move_highlight(s)
+        elif color == const.CHECK_COLOR:  # King in check
+            self._draw_check_highlight(s)
         
         return s
     
     def _draw_selection_highlight(self, surface):
-        """Draw golden halo for selected piece"""
-        highlight_radius = self.square_size//2 - 5
+        """Draw elegant golden halo for selected piece"""
+        highlight_radius = self.square_size // 2 - 5
         pygame.draw.circle(
-            surface, (255, 215, 0, 150), 
+            surface, const.HIGHLIGHT_COLOR, 
             (self.square_size//2, self.square_size//2), 
             highlight_radius
         )
-        inner_radius = self.square_size//3
+        inner_radius = self.square_size // 3
         pygame.draw.circle(
-            surface, (255, 255, 255, 200), 
+            surface, (255, 255, 255, 100), 
             (self.square_size//2, self.square_size//2), 
             inner_radius
         )
     
     def _draw_move_highlight(self, surface):
-        """Draw pulsating green circle for valid moves"""
-        radius = int(self.square_size//3 * (0.8 + 0.2 * abs(pygame.time.get_ticks() % 1000 - 500)/500))
+        """Draw smooth pulsating green circle for valid moves"""
+        pulse = abs(pygame.time.get_ticks() % 1200 - 600) / 600
+        radius = int(self.square_size // 3 * (0.7 + 0.3 * pulse))
         pygame.draw.circle(
-            surface, (50, 200, 50, 180), 
+            surface, const.MOVE_COLOR, 
             (self.square_size//2, self.square_size//2), 
             radius
         )
     
     def _draw_last_move_highlight(self, surface):
-        """Draw animated blue arrows for last move"""
-        arrow_size = self.square_size//4
-        time_offset = pygame.time.get_ticks() % 1000 / 1000
-        for i in range(2):
-            offset = (i * 2 - 1) * (5 + 5 * time_offset)
-            points = [
-                (self.square_size//2 - arrow_size + offset, self.square_size//2),
-                (self.square_size//2 + arrow_size + offset, self.square_size//2),
-                (self.square_size//2 + offset, self.square_size//2 + arrow_size)
-            ]
-            pygame.draw.polygon(
-                surface, (0, 100, 255, 200), 
-                points
-            )
+        """Draw refined blue glow for last move"""
+        glow_radius = self.square_size // 2 - 5
+        pygame.draw.circle(
+            surface, const.LAST_MOVE_COLOR, 
+            (self.square_size//2, self.square_size//2), 
+            glow_radius
+        )
+        inner_radius = self.square_size // 3
+        pygame.draw.circle(
+            surface, (255, 255, 255, 80), 
+            (self.square_size//2, self.square_size//2), 
+            inner_radius
+        )
+    
+    def _draw_check_highlight(self, surface):
+        """Draw red pulsing effect for king in check"""
+        pulse = abs(pygame.time.get_ticks() % 1000 - 500) / 500
+        radius = int(self.square_size // 2 * (0.8 + 0.2 * pulse))
+        pygame.draw.circle(
+            surface, const.CHECK_COLOR, 
+            (self.square_size//2, self.square_size//2), 
+            radius
+        )
+        pygame.draw.circle(
+            surface, (255, 255, 255, 80), 
+            (self.square_size//2, self.square_size//2), 
+            radius // 2
+        )
 
     # Game logic methods
     def get_piece(self, row, col):
@@ -258,13 +298,6 @@ class Board:
             return self.board[row][col]
         return None
     
-    # def make_move(self, start, end):
-    #     """Move a piece from start to end position"""
-    #     sr, sc = start
-    #     er, ec = end
-    #     self.board[er][ec] = self.board[sr][sc]
-    #     self.board[sr][sc] = None
-
     def make_move(self, start, end):
         """Move a piece from start to end position and handle pawn promotion"""
         sr, sc = start
@@ -430,19 +463,3 @@ class Board:
                     else:
                         score -= value
         return score
-      
-def _draw_check_highlight(self, surface):
-    """Draw red pulsing effect for king in check"""
-    radius = int(self.square_size//2 * (0.9 + 0.1 * abs(pygame.time.get_ticks() % 1000 - 500)/500))
-    pygame.draw.circle(
-        surface, (255, 0, 0, 180), 
-        (self.square_size//2, self.square_size//2), 
-        radius
-    )
-    # Inner white circle for better visibility
-    pygame.draw.circle(
-        surface, (255, 255, 255, 100), 
-        (self.square_size//2, self.square_size//2), 
-        radius//2
-    )      
-      
