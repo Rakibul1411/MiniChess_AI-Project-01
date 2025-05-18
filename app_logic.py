@@ -89,6 +89,29 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
         check_y = y + (bar_height - check_text.get_height()) // 2
         screen.blit(check_text, (check_x, check_y))
 
+    # Draw game state if game is over
+    if game_state in ["checkmate", "stalemate", "insufficient_material"]:
+        if game_state == "checkmate":
+            state_text = "Checkmate!"
+            winner = "White wins!" if turn == 'b' else "Black wins!"
+        elif game_state == "stalemate":
+            state_text = "Stalemate!"
+            winner = "Draw!"
+        else:  # insufficient_material
+            state_text = "Only Kings Remain!"
+            winner = "Draw!"
+            
+        state_font = pygame.font.SysFont("Arial", 36)
+        state_surf = state_font.render(state_text, True, const.WHITE)
+        winner_surf = state_font.render(winner, True, const.WHITE)
+        state_rect = state_surf.get_rect(center=(const.WIDTH//2, const.HEIGHT//2 - 30))
+        winner_rect = winner_surf.get_rect(center=(const.WIDTH//2, const.HEIGHT//2 + 30))
+        bg_surf = pygame.Surface((const.WIDTH, 120), pygame.SRCALPHA)
+        bg_surf.fill((0, 0, 0, 180))
+        screen.blit(bg_surf, (0, const.HEIGHT//2 - 60))
+        screen.blit(state_surf, state_rect)
+        screen.blit(winner_surf, winner_rect)
+
     # AI thinking indicator
     if ai_thinking:
         thinking_font = pygame.font.SysFont("Arial", 24)
