@@ -258,12 +258,30 @@ class Board:
             return self.board[row][col]
         return None
     
+    # def make_move(self, start, end):
+    #     """Move a piece from start to end position"""
+    #     sr, sc = start
+    #     er, ec = end
+    #     self.board[er][ec] = self.board[sr][sc]
+    #     self.board[sr][sc] = None
+
     def make_move(self, start, end):
-        """Move a piece from start to end position"""
+        """Move a piece from start to end position and handle pawn promotion"""
         sr, sc = start
         er, ec = end
-        self.board[er][ec] = self.board[sr][sc]
+        moving_piece = self.board[sr][sc]
+    
+        # Move the piece
+        self.board[er][ec] = moving_piece
         self.board[sr][sc] = None
+    
+        # Check for pawn promotion
+        if moving_piece and 'pawn' in moving_piece:
+            color = moving_piece[0]
+            # White pawn reached top row (row 0) or black pawn reached bottom row (row board.height-1)
+            if (color == 'w' and er == 0) or (color == 'b' and er == self.height - 1):
+                # Promote to queen
+                self.board[er][ec] = f"{color}queen"
     
     def undo_move(self, start, end, captured_piece):
         """Undo a move by restoring original positions"""

@@ -64,9 +64,25 @@ def get_legal_moves(board, row, col):
     
     return legal_moves
 
+
+
 def is_game_over(board, color):
-    """Check if the game is over (checkmate or stalemate)"""
-    # Check if the king is in check
+    """Check if the game is over (checkmate, stalemate, or insufficient material)"""
+    # First, check for insufficient material (only kings remaining)
+    only_kings_remain = True
+    for r in range(board.height):
+        for c in range(board.width):
+            piece = board.get_piece(r, c)
+            if piece and 'king' not in piece:  # If any non-king piece is found
+                only_kings_remain = False
+                break
+        if not only_kings_remain:
+            break
+    
+    if only_kings_remain:
+        return "insufficient_material"  # Draw due to insufficient material
+    
+    # Continue with the original logic for checkmate and stalemate
     check = is_in_check(board, color)
     
     # Check if there are any legal moves
