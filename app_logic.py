@@ -11,7 +11,6 @@ from launch_screen import create_launch_screen
 import constants as const
 from difficulty_screen import create_difficulty_screen
 from game_over_ui import draw_game_over_screen, handle_game_over_events
-
 from ai import get_ai_move
 from app_game_move import get_legal_moves, is_game_over, is_in_check
 
@@ -20,7 +19,7 @@ def initialize_game():
     pygame.init()
     pygame.font.init()
     screen = pygame.display.set_mode((const.WIDTH, const.HEIGHT))
-    pygame.display.set_caption("Mini Chess - Human vs AI")
+    pygame.display.set_caption("Mini Chess")
     return screen, pygame.time.Clock()
 
 def handle_game_events():
@@ -118,8 +117,8 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
         thinking_text = thinking_font.render("AI is thinking...", True, const.WHITE)
         screen.blit(thinking_text, (20, 20))
 
-def play_game_round(screen, clock, images, difficulty):
-    """Handle a complete game round with player and AI interaction"""
+def play_game_round(screen, clock, images, difficulty, opponent):
+    """Handle a complete game round with player and AI/human interaction"""
     board = Board(const.BOARD_WIDTH, const.BOARD_HEIGHT, const.SQUARE_SIZE)
     turn = 'w'  # White starts
     selected = None
@@ -129,13 +128,16 @@ def play_game_round(screen, clock, images, difficulty):
     ai_thinking = False
     in_check = False
     
-    # Player is white, AI is black
-    player_color = 'w'
-    ai_color = 'b'
+    # Determine player and AI colors based on opponent
+    if opponent == "OPPONENT_AI":
+        player_color = 'w'  # Player is white
+        ai_color = 'b'      # AI is black
+    else:  # OPPONENT_HUMAN
+        player_color = None  # Both colors are controlled by players
+        ai_color = None      # No AI
     
     while True:
         # Handle events
-        action = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return "QUIT"
@@ -149,8 +151,8 @@ def play_game_round(screen, clock, images, difficulty):
                 if result:
                     return result
             
-            # Handle player input when it's their turn and game is not over
-            if turn == player_color and not game_state:
+            # Handle player input for their turn
+            if not game_state:
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left click
                     pos = pygame.mouse.get_pos()
                     col = pos[0] // const.SQUARE_SIZE
@@ -168,13 +170,14 @@ def play_game_round(screen, clock, images, difficulty):
                                 last_move = (selected, (row, col))
                                 selected = None
                                 valid_moves = []
-                                turn = ai_color  # Switch turns
+                                turn = 'b' if turn == 'w' else 'w'  # Switch turns
                                 
                                 # Check if the opponent is now in check
-                                in_check = is_in_check(board, ai_color)
+                                opponent_color = 'b' if turn == 'w' else 'w'
+                                in_check = is_in_check(board, opponent_color)
                             else:
                                 # Select a different piece or deselect
-                                if piece and piece[0] == player_color:
+                                if piece and piece[0] == turn:
                                     selected = (row, col)
                                     valid_moves = get_legal_moves(board, row, col)
                                 else:
@@ -182,12 +185,12 @@ def play_game_round(screen, clock, images, difficulty):
                                     valid_moves = []
                         # If no piece is selected yet
                         else:
-                            if piece and piece[0] == player_color:
+                            if piece and piece[0] == turn:
                                 selected = (row, col)
                                 valid_moves = get_legal_moves(board, row, col)
         
-        # AI's turn
-        if turn == ai_color and not game_state:
+        # AI's turn (only if opponent is AI)
+        if opponent == "OPPONENT_AI" and turn == ai_color and not game_state:
             ai_thinking = True
             # Draw the current state while AI is "thinking"
             draw_game_screen(screen, board, images, selected, valid_moves, last_move)
@@ -204,9 +207,7 @@ def play_game_round(screen, clock, images, difficulty):
                 start, end = ai_move
                 board.make_move(start, end)
                 last_move = (start, end)
-                turn = player_color  # Switch turns
-                
-                # Check if the player is now in check
+                turn = player_color  # Switch to player's turn
                 in_check = is_in_check(board, player_color)
             
             ai_thinking = False
@@ -235,13 +236,15 @@ def handle_main_menu(screen):
         
         difficulty_selected = True
         while difficulty_selected:
-            # Handle difficulty selection
-            difficulty_choice = select_difficulty_with_navigation(screen, const.WIDTH, const.HEIGHT)
-            if difficulty_choice == "QUIT" or difficulty_choice is None:
+            # Handle difficulty and opponent selection
+            result = select_difficulty_with_navigation(screen, const.WIDTH, const.HEIGHT)
+            if result == "QUIT" or result is None:
                 return False  # Quit application
             
-            # Start game with selected difficulty
-            game_result = play_game_round(screen, pygame.time.Clock(), load_piece_images(const.SQUARE_SIZE), difficulty_choice)
+            difficulty, opponent = result  # Unpack difficulty and opponent
+            
+            # Start game with selected difficulty and opponent
+            game_result = play_game_round(screen, pygame.time.Clock(), load_piece_images(const.SQUARE_SIZE), difficulty, opponent)
             
             if game_result == "QUIT":
                 return False  # Quit application
