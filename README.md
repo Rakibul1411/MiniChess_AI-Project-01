@@ -2,7 +2,9 @@ Overview
 
 MiniChess is a high-performance, minimalist chess implementation built with Python and Pygame. Designed for rapid gameplay and clean visuals, this engine maintains the strategic depth of classical chess while optimizing for speed and accessibility.
 
+
 🎮 Features
+
 
 🧠 Difficulty Selection: Choose between Easy, Medium, and Hard AI
 
@@ -10,15 +12,15 @@ MiniChess is a high-performance, minimalist chess implementation built with Pyth
 
 🔊 Sound Effects: Click, hover, and ambient background sounds
 
-♟️ AI vs Human Gameplay: The AI makes strategic decisions based on selected difficulty
+♟️ AI vs Human, Human vs Human Gameplay: The AI makes strategic decisions based on selected difficulty
 
 📦 Modular Codebase: Organized into board.py, app_logic.py, launch_screen.py, etc.
 
 
 🗂️ Project Structure
-
+<pre>
 MiniChess/
-├── assets/                  # All images, sounds, and fonts
+├── assets/                 # All images, sounds, and fonts
 ├── app_logic.py            # Main game loop and logic
 ├── board.py                # Board rendering and piece movement
 ├── pieces.py               # Piece image loading and placeholder rendering
@@ -28,27 +30,27 @@ MiniChess/
 ├── button_navigation.py    # Manages screen transitions
 ├── main.py                 # Entry point of the game
 └── README.md               # Project documentation (this file)
+</pre>
+
+
 
 ▶️ How to Run
 
-Requirements
 
+Requirements<br/>
+<pre>
 Python 3.10+
-
-Pygame
+Pygame 
+</pre>
 
 Setup
-
+<pre>
 pip install pygame
-python main.py
+python main.py  
+</pre>
 
-🛠️ Future Improvements
 
-Save/load functionality
 
-Advanced AI with Minimax
-
-Online multiplayer support
 
 🧠 Educational Use
 
