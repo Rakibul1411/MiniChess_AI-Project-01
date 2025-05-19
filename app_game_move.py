@@ -30,20 +30,14 @@ def is_in_check(board, color):
 
 def would_be_in_check_after_move(board, start, end, color):
     """Check if making a move would leave the king in check"""
-    # Save the current state
-    sr, sc = start
-    er, ec = end
-    moved_piece = board.get_piece(sr, sc)
-    captured_piece = board.get_piece(er, ec)
-    
     # Make the move
-    board.make_move(start, end)
+    captured_piece, was_promoted, original_piece = board.make_move(start, end)
     
     # Check if the king is in check after the move
     result = is_in_check(board, color)
     
     # Restore the original position
-    board.undo_move(start, end, captured_piece)
+    board.undo_move(start, end, captured_piece, was_promoted, original_piece)
     
     return result
 
