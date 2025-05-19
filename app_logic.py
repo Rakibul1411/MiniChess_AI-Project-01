@@ -164,10 +164,10 @@ def play_game_round(screen, clock, images, difficulty, opponent):
                         
                         # If a piece is already selected
                         if selected:
-                            # Check if clicked on a valid move
+                            # When the player makes a move
                             if (row, col) in valid_moves:
                                 # Make the move
-                                board.make_move(selected, (row, col))
+                                captured_piece, was_promoted, original_piece = board.make_move(selected, (row, col))
                                 last_move = (selected, (row, col))
                                 selected = None
                                 valid_moves = []
@@ -206,7 +206,7 @@ def play_game_round(screen, clock, images, difficulty, opponent):
             
             if ai_move:
                 start, end = ai_move
-                board.make_move(start, end)
+                captured_piece, was_promoted, original_piece = board.make_move(start, end)
                 last_move = (start, end)
                 turn = player_color  # Switch to player's turn
                 in_check = is_in_check(board, player_color)

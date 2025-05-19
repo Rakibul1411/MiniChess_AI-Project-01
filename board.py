@@ -303,11 +303,14 @@ class Board:
         sr, sc = start
         er, ec = end
         moving_piece = self.board[sr][sc]
-    
+        captured_piece = self.board[er][ec]  # Store the captured piece
+        was_promoted = False  # Track if promotion occurred
+        original_piece = moving_piece  # Store the original piece before promotion
+
         # Move the piece
         self.board[er][ec] = moving_piece
         self.board[sr][sc] = None
-    
+
         # Check for pawn promotion
         if moving_piece and 'pawn' in moving_piece:
             color = moving_piece[0]
@@ -315,13 +318,20 @@ class Board:
             if (color == 'w' and er == 0) or (color == 'b' and er == self.height - 1):
                 # Promote to queen
                 self.board[er][ec] = f"{color}queen"
+                was_promoted = True
+
+        return captured_piece, was_promoted, original_piece  # Return additional info for undo
     
-    def undo_move(self, start, end, captured_piece):
-        """Undo a move by restoring original positions"""
+    def undo_move(self, start, end, captured_piece, was_promoted, original_piece):
+        """Undo a move by restoring original positions, handling pawn promotion"""
         sr, sc = start
         er, ec = end
-        self.board[sr][sc] = self.board[er][ec]
-        self.board[er][ec] = captured_piece
+        # If the move involved a promotion, restore the original piece (pawn)
+        if was_promoted:
+            self.board[sr][sc] = original_piece  # Restore the original pawn
+        else:
+            self.board[sr][sc] = self.board[er][ec]  # Otherwise, move the piece back as usual
+        self.board[er][ec] = captured_piece  # Restore the captured piece (or None)
     
     # Move generation methods
     def get_valid_moves(self, row, col):
