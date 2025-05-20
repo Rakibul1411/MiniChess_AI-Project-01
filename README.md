@@ -40,12 +40,12 @@ MiniChess/
 Requirements<br/>
 <pre>
 Python 3.10+
-Pygame 
 </pre>
 
 Setup
 <pre>
-pip install pygame
+python -m venv venv
+pip install -r requirements.txt
 python main.py  
 </pre>
 
