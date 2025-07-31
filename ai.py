@@ -44,31 +44,31 @@ def get_ai_move(board, color, difficulty):
 
     depth=-1
     if difficulty == "EASY":
-        depth=2
+        depth=1
     elif difficulty == "MEDIUM":
-        depth=3
+        depth=2
     elif difficulty == "HARD":
-        depth=4
-    elif difficulty == "":
-        depth=4
+        depth=3
+    else :
+        depth=3
 
     total_pieces = sum(1 for r in range(board.height) 
                      for c in range(board.width) 
                      if board.get_piece(r, c))
     
-    if total_pieces <= 11: 
-        depth+=1  
-        print(f"Endgame detected ({total_pieces} pieces), increasing depth to {depth}")
-    elif total_pieces <= 7:  
-        depth+=1
+    if total_pieces <= 7: 
+        depth+=2  
         print(f"Late endgame detected ({total_pieces} pieces), increasing depth to {depth}")
+    elif total_pieces <= 11:  
+        depth+=1
+        print(f"Endgame detected ({total_pieces} pieces), increasing depth to {depth}")
 
     ordered_moves=get_sorted_moves(board, color, all_pieces_with_moves)
         
     best_score = float('-inf')
     best_move = None
         
-    timeout = 4.0  
+    timeout = 2.5  
     last_valid_move = best_move
     last_valid_score = best_score
     
@@ -174,7 +174,7 @@ def heuristic_function(board, player_color, opponent_color, game_state):
     if game_state == "checkmate":
         return 1000 if opponent_color == player_color else -1000
     elif game_state in ["stalemate", "insufficient_material"]:
-        return 0  # Draw situations return 0
+        return 0  
 
     score=board.evaluate_board(player_color)
 

@@ -1,4 +1,3 @@
-
 def find_king(board, color):
     """Find the position of the king with the given color"""
     for r in range(board.height):
@@ -13,7 +12,7 @@ def is_in_check(board, color):
     # Find the king's position
     king_pos = find_king(board, color)
     if not king_pos:
-        return False  # No king found (shouldn't happen in a normal game)
+        return False  
     
     # Check if any opponent piece can capture the king
     opponent_color = 'b' if color == 'w' else 'w'
@@ -30,13 +29,13 @@ def is_in_check(board, color):
 
 def would_be_in_check_after_move(board, start, end, color):
     """Check if making a move would leave the king in check"""
-    # Make the move
+    
     captured_piece, was_promoted, original_piece = board.make_move(start, end)
     
-    # Check if the king is in check after the move
+    
     result = is_in_check(board, color)
     
-    # Restore the original position
+    
     board.undo_move(start, end, captured_piece, was_promoted, original_piece)
     
     return result
@@ -67,14 +66,14 @@ def is_game_over(board, color):
     for r in range(board.height):
         for c in range(board.width):
             piece = board.get_piece(r, c)
-            if piece and 'king' not in piece:  # If any non-king piece is found
+            if piece and 'king' not in piece:  
                 only_kings_remain = False
                 break
         if not only_kings_remain:
             break
     
     if only_kings_remain:
-        return "insufficient_material"  # Draw due to insufficient material
+        return "insufficient_material"  
     
     # Continue with the original logic for checkmate and stalemate
     check = is_in_check(board, color)
@@ -94,8 +93,8 @@ def is_game_over(board, color):
     
     if not has_legal_moves:
         if check:
-            return "checkmate"  # No legal moves and king is in check
+            return "checkmate"  
         else:
-            return "stalemate"  # No legal moves but king is not in check
+            return "stalemate"  
     
     return None

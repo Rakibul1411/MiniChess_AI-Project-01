@@ -1,4 +1,3 @@
-# app_logic.py
 import pygame
 import os
 import sys
@@ -66,15 +65,15 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
     bar_height = const.UI_HEIGHT
     y = const.HEIGHT - bar_height
 
-    # Draw bar at the bottom
+    
     pygame.draw.rect(screen, (33, 150, 243), (0, y, const.WIDTH, bar_height))
 
-    # Turn (left)
+    
     turn_text = font.render(f"Turn: {color_text}", True, const.WHITE)
     turn_pos = (20, y + (bar_height - turn_text.get_height()) // 2)
     screen.blit(turn_text, turn_pos)
 
-    # Difficulty (right)
+    
     if difficulty:
         diff_text = font.render(f"Difficulty: {difficulty.title()}", True, const.WHITE)
         diff_pos = (const.WIDTH - diff_text.get_width() - 20, y + (bar_height - diff_text.get_height()) // 2)
@@ -82,14 +81,14 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
     else:
         diff_text = None
 
-    # King in Check! (centered)
+    
     if in_check:
         check_text = font.render("King in Check!", True, (255, 50, 50))
         check_x = (const.WIDTH - check_text.get_width()) // 2
         check_y = y + (bar_height - check_text.get_height()) // 2
         screen.blit(check_text, (check_x, check_y))
 
-    # Draw game state if game is over
+    
     if game_state in ["checkmate", "stalemate", "insufficient_material"]:
         if game_state == "checkmate":
             state_text = "Checkmate!"
@@ -97,7 +96,7 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
         elif game_state == "stalemate":
             state_text = "Stalemate!"
             winner = "Draw!"
-        else:  # insufficient_material
+        else:  
             state_text = "Only Kings Remain!"
             winner = "Draw!"
             
@@ -112,7 +111,7 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
         screen.blit(state_surf, state_rect)
         screen.blit(winner_surf, winner_rect)
 
-    # AI thinking indicator
+    
     if ai_thinking:
         thinking_font = pygame.font.SysFont("Arial", 24)
         thinking_text = thinking_font.render("AI is thinking...", True, const.WHITE)
@@ -121,7 +120,7 @@ def draw_game_ui(screen, turn, game_state, ai_thinking=False, in_check=False, di
 def play_game_round(screen, clock, images, difficulty, opponent):
     """Handle a complete game round with player and AI/human interaction"""
     board = Board(const.BOARD_WIDTH, const.BOARD_HEIGHT, const.SQUARE_SIZE)
-    turn = 'w'  # White starts
+    turn = 'w'  
     selected = None
     valid_moves = []
     last_move = None
@@ -131,11 +130,11 @@ def play_game_round(screen, clock, images, difficulty, opponent):
     
     # Determine player and AI colors based on opponent
     if opponent == "OPPONENT_AI":
-        player_color = 'w'  # Player is white
-        ai_color = 'b'      # AI is black
-    else:  # OPPONENT_HUMAN
-        player_color = None  # Both colors are controlled by players
-        ai_color = None      # No AI
+        player_color = 'w'  
+        ai_color = 'b'      
+    else:  
+        player_color = None  
+        ai_color = None      
     
     while True:
         # Handle events
@@ -154,7 +153,7 @@ def play_game_round(screen, clock, images, difficulty, opponent):
             
             # Handle player input for their turn
             if not game_state:
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left click
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  
                     pos = pygame.mouse.get_pos()
                     col = pos[0] // const.SQUARE_SIZE
                     row = pos[1] // const.SQUARE_SIZE
@@ -164,14 +163,14 @@ def play_game_round(screen, clock, images, difficulty, opponent):
                         
                         # If a piece is already selected
                         if selected:
-                            # When the player makes a move
+                            
                             if (row, col) in valid_moves:
                                 # Make the move
                                 captured_piece, was_promoted, original_piece = board.make_move(selected, (row, col))
                                 last_move = (selected, (row, col))
                                 selected = None
                                 valid_moves = []
-                                turn = 'b' if turn == 'w' else 'w'  # Switch turns
+                                turn = 'b' if turn == 'w' else 'w'  
                                 
                                 # Check if the opponent is now in check
                                 opponent_color = 'b' if turn == 'w' else 'w'
@@ -184,7 +183,7 @@ def play_game_round(screen, clock, images, difficulty, opponent):
                                 else:
                                     selected = None
                                     valid_moves = []
-                        # If no piece is selected yet
+                        
                         else:
                             if piece and piece[0] == turn:
                                 selected = (row, col)

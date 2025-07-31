@@ -225,13 +225,13 @@ class Board:
         """Create refined highlight effect based on type"""
         s = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
         
-        if color == const.HIGHLIGHT_COLOR:  # Selected piece
+        if color == const.HIGHLIGHT_COLOR:  
             self._draw_selection_highlight(s)
-        elif color == const.MOVE_COLOR:    # Valid move
+        elif color == const.MOVE_COLOR:    
             self._draw_move_highlight(s)
-        elif color == const.LAST_MOVE_COLOR:  # Last move
+        elif color == const.LAST_MOVE_COLOR:  
             self._draw_last_move_highlight(s)
-        elif color == const.CHECK_COLOR:  # King in check
+        elif color == const.CHECK_COLOR:  
             self._draw_check_highlight(s)
         
         return s
@@ -303,9 +303,9 @@ class Board:
         sr, sc = start
         er, ec = end
         moving_piece = self.board[sr][sc]
-        captured_piece = self.board[er][ec]  # Store the captured piece
-        was_promoted = False  # Track if promotion occurred
-        original_piece = moving_piece  # Store the original piece before promotion
+        captured_piece = self.board[er][ec]  
+        was_promoted = False  
+        original_piece = moving_piece  
 
         # Move the piece
         self.board[er][ec] = moving_piece
@@ -314,24 +314,24 @@ class Board:
         # Check for pawn promotion
         if moving_piece and 'pawn' in moving_piece:
             color = moving_piece[0]
-            # White pawn reached top row (row 0) or black pawn reached bottom row (row board.height-1)
+            
             if (color == 'w' and er == 0) or (color == 'b' and er == self.height - 1):
                 # Promote to queen
                 self.board[er][ec] = f"{color}queen"
                 was_promoted = True
 
-        return captured_piece, was_promoted, original_piece  # Return additional info for undo
+        return captured_piece, was_promoted, original_piece  
     
     def undo_move(self, start, end, captured_piece, was_promoted, original_piece):
         """Undo a move by restoring original positions, handling pawn promotion"""
         sr, sc = start
         er, ec = end
-        # If the move involved a promotion, restore the original piece (pawn)
+        
         if was_promoted:
-            self.board[sr][sc] = original_piece  # Restore the original pawn
+            self.board[sr][sc] = original_piece  
         else:
-            self.board[sr][sc] = self.board[er][ec]  # Otherwise, move the piece back as usual
-        self.board[er][ec] = captured_piece  # Restore the captured piece (or None)
+            self.board[sr][sc] = self.board[er][ec]  
+        self.board[er][ec] = captured_piece  
     
     # Move generation methods
     def get_valid_moves(self, row, col):
@@ -340,8 +340,8 @@ class Board:
         if not piece:
             return []
         
-        typ = piece[1:]  # Piece type (e.g., 'pawn', 'rook')
-        color = piece[0] # Piece color ('w' or 'b')
+        typ = piece[1:]  
+        color = piece[0] 
         
         if typ == 'pawn':
             return self._get_pawn_moves(row, col, color)
@@ -381,9 +381,9 @@ class Board:
         directions = []
         
         if piece_type in ('rook', 'queen'):
-            directions.extend([(-1, 0), (1, 0), (0, -1), (0, 1)])  # Rook directions
+            directions.extend([(-1, 0), (1, 0), (0, -1), (0, 1)])  
         if piece_type in ('bishop', 'queen'):
-            directions.extend([(-1, -1), (-1, 1), (1, -1), (1, 1)])  # Bishop directions
+            directions.extend([(-1, -1), (-1, 1), (1, -1), (1, 1)])  
         
         for dr, dc in directions:
             for i in range(1, max(self.width, self.height)):
