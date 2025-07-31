@@ -7,7 +7,7 @@ MiniChess is a high-performance chess game built with Python and Pygame, featuri
 ## 👨‍💻 Development Team
 
 **Team Members**: 
-- **MD. Rakibul Islam** - [GitHub Profile](https://github.com/Rakibul1411)
+- **Md. Rakibul Islam** - [GitHub Profile](https://github.com/Rakibul1411)
 - **Hasnain Sheikh** - [GitHub Profile](https://github.com/Hasnain1408)
 - **Md. Kamrul Islam** - [GitHub Profile](https://github.com/141Kamrul)
 
